@@ -1,20 +1,29 @@
 const Cart = require('../model/cart.model')
 const Product  = require('../model/product.model')
-
+const hateos = require('../utils/HATEOS')
 
 const getCart = async(req,res,next)=>{
 try {
     const userId = req.params.userId;
     const cart = await Cart.findOne({userId})
 
+    const responses = {
+        message: "Cart Items",
+        items: cart,
+        links: {
+           self:`/cart/v1/${userId}`,
+           deleteCart:`/cart/v1/${userId}`,
+        }
+    }
+
     if(!cart){
         res.status(404).json({message:'Cart not found'})
     }else{
-        res.status(200).json(cart)
+        res.status(200).json(responses)
     }
 
 } catch (error) {
-    res.status(500).json({message:' Server Error'})
+    next(error)
 }
 }
 const postCart = async(req, res, next)=> {
@@ -55,11 +64,18 @@ try {
     cart.totalPrice += totalPrice
 
     await cart.save()
-    res.status(201).json({message:'Product added in cart succcessfully',cart})
+    res.status(201).json({
+        message:'Product added in cart succcessfully',
+        cart:cart,
+        links:{
+            self:`/cart/v1/${userId}`,
+            deleteCart: `/cart/v1/${userId}`
+        }
+    })
 
 } catch (error) {
     console.log(error)
-    res.status(500).json({message:'Server Error'})
+    next(error)
 }
 }
 const deleteCart = async(req,res,next)=>{
@@ -70,12 +86,16 @@ const deleteCart = async(req,res,next)=>{
       if(!cart){
         res.status(404).json({message:'Cart not found'})
       }else{
-        res.status(200).json({message:'Cart deleted sucessfully'})
+        res.status(200).json({
+            message:'Cart deleted sucessfully',
+            links:{
+                createCart:`/cart/v1`
+            }
+        })
       }
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        next(error)
     }
 }
 const deleteCartItem = async(req,res,next)=>{
@@ -104,12 +124,18 @@ const deleteCartItem = async(req,res,next)=>{
                }
         
                 await cart.save()
-                res.status(200).json({ message: 'Item removed from cart successfully' });
+                res.status(200).json({ 
+                    message: 'Item removed from cart successfully' ,
+                    links:{
+                        getcart: `/cart/v1/${cartId}`
+                    }
+                
+                });
         }
        }
        
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error)
       }
 }
 

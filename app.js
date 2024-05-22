@@ -2,7 +2,8 @@ const express = require('express')
 const port = 4444;
 const hostName = '127.0.0.1'
 const app = express()
-const userRouter = require('./routes/auth.router')
+const authRouter = require('./routes/auth.router')
+const userRouter = require('./routes/user.router')
 const productRouter = require('./routes/product.router')
 const cartRouter = require('./routes/cart.router')
 const orderRouter = require('./routes/order.router')
@@ -16,6 +17,7 @@ require('./db/connect')
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
+app.use(authRouter)
 app.use(userRouter)
 app.use(productRouter)
 app.use(cartRouter)

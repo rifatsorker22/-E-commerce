@@ -42,7 +42,7 @@ const register = async (req,res,next)=>{
         }
     
     } catch (error) {
-        res.status(500).json({message : 'Server Error'})
+        next(error)
     }
 }
 const login = async (req,res,next)=>{
@@ -77,7 +77,7 @@ const login = async (req,res,next)=>{
             });
         }
     } catch (error) {
-        res.status(500).json({message : 'Server Error'})
+       next(error)
     }
 }
 const logout = async (req,res,next) => {
