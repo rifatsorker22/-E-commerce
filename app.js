@@ -12,11 +12,13 @@ const transectionRouter = require('./routes/transection.route')
 const refundRouter = require('./routes/refund.route')
 const refundReasonRouter = require('./routes/refundReason.route')
 const feedbackRouter = require('./routes/feedback.route')
+const healthRouter = require('./routes/Health.route')
 require('./db/connect')
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
+app.use(healthRouter)
 app.use(authRouter)
 app.use(userRouter)
 app.use(productRouter)

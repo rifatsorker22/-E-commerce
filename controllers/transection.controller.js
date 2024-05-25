@@ -1,31 +1,75 @@
 const Transection = require('../model/transection.model')
 
 
-const health = async(req,res,next)=>{
-   try {
-       res.status(200).json({message:'Transection api is healthy'})
-   } catch (error) {
-       res.status(500).json({messgae:'server Error'})
-   }
-} 
+const getById = async(req,res,next)=>{
+    try {
+        const id = req.params.id;
+        const transction = await Transection.findById(id)
+
+        if(!transction){
+            res.status(200).json({
+                message:'Transection Not found'
+            })
+        }else{
+              res.status(200).json({
+                message:'Transection Found',
+                Transection: transction,
+                links:{
+                    self: `/transection/v1/${transction.id}`,
+                    allTransection: `/transection/v1`,
+                    createTransection: `/transection/v1/`
+                }
+              })  
+        }
+    } catch (error) {
+        next(error)
+    }
+}
 const getTransection = async(req,res,next)=>{
  try {
-    const transection = await Transection.find()
+    const page = +req.query.page || 1;
+    const limit = +req.query.limit || 10
+    const skip = (page - 1) * limit
+
+
+    const transection = await Transection.find().skip(skip).limit(limit)
+    const totalTransection = await Transection.count()
+    const totalPage = Math.ceil(totalTransection / limit)
+
+
 
     if(transection === 0){
         res.status(404).json({message:'transection not found'})
     }else{
-        res.status(200).json({transection:transection})
+        res.status(200).json({
+            message:'All Transection found',
+            transection:transection,
+            paginations:{
+                currentPage: page,
+                totalPage: totalPage,
+                totalTransection: totalTransection,
+                hasPrev:(page > 1 ) ? page - 1 : null,
+                hasNext: (page < totalPage) ? page+1 : null
+
+
+            },
+            links:{
+                self: `/transection/v1?page=${page}&limit=${limit}`,
+                prev: (page > 1 ) ? `/transection/v1?page=${page -1}&limit=${limit}` : null,
+                next: (page < totalPage) ? `/transection/v1?page=${page +1}&limit=${limit}` : null
+
+            }
+        })
     }
  } catch (error) {
-    res.status(500).json({message:'Server Error'})
+    next(error)
  }
 }
 const postTransection = async(req,res,next)=>{
     try {
        const {customar_id,payment_source_id,amount,currency,description}=req.body
 
-       const newTransection= new Transection({
+       const newTransection = new Transection({
         customar_id,
         payment_source_id,
         amount,
@@ -33,10 +77,17 @@ const postTransection = async(req,res,next)=>{
         description
        })
         await newTransection.save()
-        res.status(201).json({Transection:newTransection})
+        res.status(201).json({
+            message:'New Transection Created',
+            Transection:newTransection,
+            links:{
+              self: `/transection/v1/${newTransection.id}`,
+              allTransection: `/transection/v1`,
+              updateTransection : `/transection/v1/${newTransection.id}`
+            }
+    })
     } catch (error) {
-       
-       res.status(500).json({message:'Server Error'})
+       next(error)
     }
 }
 const putTransection = async(req,res,next)=>{
@@ -49,9 +100,15 @@ const putTransection = async(req,res,next)=>{
         {status:newStatus},
         {new:true}
        )
-       res.status(203).json({message:'Product is successfully updated ',transection:updateTransection})
+       res.status(203).json({
+        message:'Product is successfully updated ',
+        transection:updateTransection,
+        links:{
+            self: `/transection/v1/${updateTransection.id}`
+        }
+    })
     } catch (error) {
-       res.status(500).json({message:'Server Error'})
+        next(error)
     }
 }
 const deleteTransection = async(req,res,next)=>{
@@ -60,19 +117,28 @@ const deleteTransection = async(req,res,next)=>{
        const deleteTransection = await Transection.findByIdAndDelete(id)
 
        if(!deleteTransection){
-        res.status(404).json({message:'Transection not found'})
+        res.status(404).json({
+            message:'Transection not found'
+        })
        }else{
-        res.status(203).json({message:'Transection deleted successfully'})
+        res.status(203).json({
+            message:'Transection deleted successfully',
+            Transection: deleteTransection,
+            links:{
+                allTransection: `/transection/v1`,
+                createTransection: `/transection/v1/`
+            }
+        })
        }
     } catch (error) {
-       res.status(500).json({message:'Server Error'})
+        next(error)
     }
 }  
 
 
 
 module.exports = {
-    health,
+    getById,
     getTransection,
     postTransection,
     putTransection,

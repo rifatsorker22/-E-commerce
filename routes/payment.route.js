@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const {health,getById,getPayment,postPayment,putPayment,deletePayment}=require('../controllers/pSource.controller')
+const {getById,getPayment,postPayment,putPayment,deletePayment}=require('../controllers/pSource.controller')
 
 
-router.get('/payment/v1/health', health)
+
 router.get('/payment/v1/:id', getById)
 router.get('/payment/v1', getPayment)
 router.post('/payment/v1', postPayment)
