@@ -41,13 +41,13 @@ const getOrder = async(req,res,next)=>{
      }else{
         res.status(200).json({
             message: 'All Orders',
-            orders:orders,
+            orders: orders,
             paginations:{
-            currentPage:page,
-            totalOrders:totalOrders,
-            totalPage:Math.ceil(totalOrders/limit),
-            prev: (page > 1) ? page-1:null,
-            next:(page < totalPage) ? page +1: null
+               currentPage:page,
+               totalOrders:totalOrders,
+               totalPage:Math.ceil(totalOrders/limit),
+               prev: (page > 1) ? page-1:null,
+               next:(page < totalPage) ? page +1: null
             },
             links:{
               self: `/orders?page=${page}&limit=${limit}`,
