@@ -12,6 +12,7 @@ const transectionRouter = require('./routes/transection.route')
 const refundRouter = require('./routes/refund.route')
 const refundReasonRouter = require('./routes/refundReason.route')
 const feedbackRouter = require('./routes/feedback.route')
+const inventoryRouter = require('./routes/inventory.router')
 const healthRouter = require('./routes/Health.route')
 require('./db/connect')
 
@@ -29,7 +30,7 @@ app.use(transectionRouter)
 app.use(refundRouter)
 app.use(refundReasonRouter)
 app.use(feedbackRouter)
-
+app.use(inventoryRouter)
 
 
 app.use((req,res,next)=>{
