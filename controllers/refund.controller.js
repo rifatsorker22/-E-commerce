@@ -4,8 +4,8 @@ const Refund = require('../model/refund.model')
 
 const getAllRefund = async(req,res,next)=>{
     try {
-        const page = +req.params.page || 1;
-        const limit = +req.params.limit || 10;
+        const page = +req.query.page || 1;
+        const limit = +req.query.limit || 10;
         const skip = (page - 1)* limit
         const refund = await Refund.find().skip(skip).limit(limit)
         const totalItem = await Refund.count()

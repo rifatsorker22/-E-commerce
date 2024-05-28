@@ -25,8 +25,8 @@ const getById = async(req,res,next)=>{
 }
 const getAllrefundReason = async(req,res,next)=>{
     try {
-        const page  = +req.params.page || 1
-        const limit = +req.params.limit ||10
+        const page  = +req.query.page || 1
+        const limit = +req.query.limit ||10
         const skip = (page - 1) * limit
         const reason = await Reason.find().skip(skip).limit(limit)
         const totalItem = await Reason.count()
