@@ -14,6 +14,7 @@ const refundReasonRouter = require('./routes/refundReason.route')
 const feedbackRouter = require('./routes/feedback.route')
 const inventoryRouter = require('./routes/inventory.router')
 const recommendationRouter = require('./routes/recommendation.route')
+const addressRouter = require('./routes/address.router')
 const healthRouter = require('./routes/Health.route')
 require('./db/connect')
 
@@ -33,6 +34,13 @@ app.use(refundReasonRouter)
 app.use(feedbackRouter)
 app.use(inventoryRouter)
 app.use(recommendationRouter)
+app.use(addressRouter)
+
+
+
+
+
+
 
 app.use((req,res,next)=>{
     res.status(404).json({
