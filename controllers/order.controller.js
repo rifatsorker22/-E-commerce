@@ -6,7 +6,7 @@ const getByOrderId = async(req,res,next)=>{
 try {
     const id = req.params.id;
     const order = await Order.findById(id)
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     if(!order){
         res.status(404).json({message:'Order not found'})
     }else{
@@ -14,11 +14,11 @@ try {
             message:'Order Found',
             order:order,
             links:{
-                self: `/orders/v1/${id}`,
-                update: `/orders/v1/${id}`,
-                delete: `/orders/v1/${id}`,
-                allOrder: `/orders/v1`,
-                createOrder: `/orders/v1`
+                self: `${baseUrl}/orders/v1/${id}`,
+                update: `${baseUrl}/orders/v1/${id}`,
+                delete: `${baseUrl}/orders/v1/${id}`,
+                allOrder: `${baseUrl}/orders/v1`,
+                createOrder: `${baseUrl}/orders/v1`
             }
         
         })
@@ -35,7 +35,7 @@ const getOrder = async(req,res,next)=>{
 
      const orders = await Order.find().skip(skip).limit(limit)
      const totalOrders = orders.countDocuments()
-
+     const baseUrl = `${req.protocol}://${req.get('host')}`
      if(orders === 0){
         res.status(200).json({message:'Order not found'})
      }else{
@@ -50,9 +50,9 @@ const getOrder = async(req,res,next)=>{
                next:(page < totalPage) ? page +1: null
             },
             links:{
-              self: `/orders?page=${page}&limit=${limit}`,
-              next: (page < totalPage)?`/orders?page=${page+1}&limit=${limit}`:null,
-              prev: (page > 1)? `/orders?page=${page-1}&limit=${limit}`: null
+              self: `${baseUrl}/orders?page=${page}&limit=${limit}`,
+              next: (page < totalPage)?`${baseUrl}/orders?page=${page+1}&limit=${limit}`:null,
+              prev: (page > 1)? `${baseUrl}/orders?page=${page-1}&limit=${limit}`: null
             }
         })
      }
@@ -93,15 +93,15 @@ const postOrder = async (req, res, next) => {
 
         // Save the new order to the database
         const savedOrder = await newOrder.save();
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(201).json({ 
             message:'Order created Successfully',
             Orders: savedOrder,
             links:{
-                self:`/orders/v1/${savedOrder._id}`,
-                AllOrders: `/orders/v1`,
-                update: `/orders/v1/${savedOrder._id}`,
-                delete:`/orders/v1/${savedOrder._id}`
+                self:`${baseUrl}/orders/v1/${savedOrder._id}`,
+                AllOrders: `${baseUrl}/orders/v1`,
+                update: `${baseUrl}/orders/v1/${savedOrder._id}`,
+                delete:`${baseUrl}/orders/v1/${savedOrder._id}`
             }
         
         } ); // Send the saved order back as JSON response
@@ -113,7 +113,7 @@ const patchOrder = async(req,res,next)=>{
     try {
       const id = req.params.id;
       const order = await Order.findById(id)
-
+      const baseUrl = `${req.protocol}://${req.get('host')}`
       if(!order){
         res.status(404).json({message:'Order not found'})
       }else{
@@ -123,10 +123,10 @@ const patchOrder = async(req,res,next)=>{
             message:'order updated',
             Order:updateOrder,
             links:{
-                self:`/orders/v1/${updateOrder._id}`,
-                AllOrder:`/orders/v1`,
-                createOrder: `/orders/v1`,
-                deleteOrder:  `/orders/v1/${updateOrder._id}`
+                self:`${baseUrl}/orders/v1/${updateOrder._id}`,
+                AllOrder:`${baseUrl}/orders/v1`,
+                createOrder: `${baseUrl}/orders/v1`,
+                deleteOrder:  `${baseUrl}/orders/v1/${updateOrder._id}`
             }
         })
       }
@@ -138,15 +138,15 @@ const deleteOrder = async(req,res,next)=>{
     try {
       const id = req.params.id;
       const deleteOrder = await Order.findByIdAndDelete(id)
-
+      const baseUrl = `${req.protocol}://${req.get('host')}`
       if(!deleteOrder){
         res.status(404).json({message:'Order not found'})
       }else{
         res.status(203).json({
             message:'order deleted Successfully',
             links:{
-                AllOrder:`/orders/v1`,
-                createOrder: `/orders/v1`,
+                AllOrder:`${baseUrl}/orders/v1`,
+                createOrder: `${baseUrl}/orders/v1`,
             }
         
         })

@@ -7,6 +7,7 @@ const getByIdFeedback = async(req,res,next)=>{
     try {
         const {id} = req.params;
         const feedback = await Feedback.findById(id)
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!feedback){
             res.status(404).json({message:'feedback not found'})
         }else{
@@ -14,11 +15,11 @@ const getByIdFeedback = async(req,res,next)=>{
                 message:'Feedback Found',
                 feedback:feedback,
                 links:{
-                    self: `/feedback/v1/${feedback.id}`,
-                    allFeedback: `/feedback/v1`,
-                    createFeedback: `/feedback/v1`,
-                    update: `/feedback/v1/${feedback.id}`,
-                    delete: `/feedback/v1/${feedback.id}`
+                    self: `${baseUrl}/feedback/v1/${feedback.id}`,
+                    allFeedback: `${baseUrl}/feedback/v1`,
+                    createFeedback: `${baseUrl}/feedback/v1`,
+                    update: `${baseUrl}/feedback/v1/${feedback.id}`,
+                    delete: `${baseUrl}/feedback/v1/${feedback.id}`
 
                 }})
         }
@@ -34,7 +35,7 @@ const getFeedback = async(req,res,next)=>{
         const feedback = await Feedback.find().skip(skip).limit(limit)
         const totalItem = await Feedback.count()
         const totalPage = Math.ceil(totalItem/limit)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         const pagination = {
             curretPage :page,
             totalItem: totalItem,
@@ -43,9 +44,9 @@ const getFeedback = async(req,res,next)=>{
             hasNext: (page < totalPage) ? page+1: null
         }
         const links={
-            self: `/feedback/v1?page=${page}&limit=${limit}`,
-            prev: (page > 1) ? `/feedback/v1?page=${page-1}&limit=${limit}`: null,
-            next: (page < totalPage) ?`/feedback/v1?page=${page+1}&limit=${limit}`: null
+            self: `${baseUrl}/feedback/v1?page=${page}&limit=${limit}`,
+            prev: (page > 1) ? `${baseUrl}/feedback/v1?page=${page-1}&limit=${limit}`: null,
+            next: (page < totalPage) ?`${baseUrl}/feedback/v1?page=${page+1}&limit=${limit}`: null
         }
 
 
@@ -66,7 +67,7 @@ const getFeedback = async(req,res,next)=>{
 const postFeedback = async(req,res,next)=>{
     try {
         const {orderId,rating,comments}=req.body
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         const feedback = new Feedback({
             orderId,
             rating,
@@ -77,10 +78,10 @@ const postFeedback = async(req,res,next)=>{
             message:'',
             feedback:feedback,
             links:{
-                self: `/feedback/v1/${feedback.id}`,
-                allFeedback: `/feedback/v1`,
-                update: `/feedback/v1/${feedback.id}`,
-                delete: `/feedback/v1/${feedback.id}`
+                self: `${baseUrl}/feedback/v1/${feedback.id}`,
+                allFeedback: `${baseUrl}/feedback/v1`,
+                update: `${baseUrl}/feedback/v1/${feedback.id}`,
+                delete: `${baseUrl}/feedback/v1/${feedback.id}`
             }
         })
 
@@ -93,7 +94,7 @@ const putFeedback = async(req,res,next)=>{
     try {
         const {id}=req.params
         const {orderId,rating,comments}=req.body
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         const UpdateFeedback = await Feedback.getByIdAndUpdate(
             
             id,
@@ -111,8 +112,8 @@ const putFeedback = async(req,res,next)=>{
                 message:'Feedback updated Successfully',
                 UpdateFeedback: UpdateFeedback,
                 links:{
-                    self: `/feedback/v1/${UpdateFeedback.id}`,
-                    delete: `/feedback/v1/${UpdateFeedback.id}`
+                    self: `${baseUrl}/feedback/v1/${UpdateFeedback.id}`,
+                    delete: `${baseUrl}/feedback/v1/${UpdateFeedback.id}`
                 }
             })
         }
@@ -124,6 +125,7 @@ const deleteFeedback = async(req,res,next)=>{
     try {
         const {id} = req.params
         const deleteFeedback = await Feedback.getByIdAndDelete(id)
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!deleteFeedback){
             res.status(404).json({message:'feedback not found'})
         }else{
@@ -131,8 +133,8 @@ const deleteFeedback = async(req,res,next)=>{
                 message:'Feedback deleted Successfully',
                 deleteFeedbackFeedback: deleteFeedback,
                 links:{
-                    allFeedback: `/feedback/v1`,
-                    createFeedback: `/feedback/v1`,
+                    allFeedback: `${baseUrl}/feedback/v1`,
+                    createFeedback: `${baseUrl}/feedback/v1`,
                 }
             })
         }

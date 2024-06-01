@@ -6,6 +6,7 @@ const getById = async(req,res,next)=>{
     try {
         const {id}=req.body
         const reason = await Reason.findById(id)
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!reason){
             res.status(404).json({message:'Reason not found'})
         }else{
@@ -13,9 +14,9 @@ const getById = async(req,res,next)=>{
                 message:'Reason',
                 reason:reason,
                 links:{
-                    self: `/refund/reason/v1/${reason.id}`,
-                    allRefundReason: `/refund/reason/v1`,
-                    createRefundReason: `/refund/reason/v1`
+                    self: `${baseUrl}/refund/reason/v1/${reason.id}`,
+                    allRefundReason: `${baseUrl}/refund/reason/v1`,
+                    createRefundReason: `${baseUrl}/refund/reason/v1`
                 }
             })
         }
@@ -31,7 +32,7 @@ const getAllrefundReason = async(req,res,next)=>{
         const reason = await Reason.find().skip(skip).limit(limit)
         const totalItem = await Reason.count()
         const totalPage = Math.ceil(totalItem/limit)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(reason === 0){
             res.status(404).json({message:'Reason not found'})
         }else{
@@ -46,9 +47,9 @@ const getAllrefundReason = async(req,res,next)=>{
                   next: (page < totalPage) ? page + 1 : null
                 },
                 links:{
-                    self: `/refund/reason/v1?page=${page}&limit=${limit}`,
-                    prev:(page > 1) ? `/refund/reason/v1?page=${page -1}&limit=${limit}`:null, 
-                    next:(page < totalPage) ?`/refund/reason/v1?page=${page +1}&limit=${limit}`:null
+                    self: `${baseUrl}/refund/reason/v1?page=${page}&limit=${limit}`,
+                    prev:(page > 1) ? `${baseUrl}/refund/reason/v1?page=${page -1}&limit=${limit}`:null, 
+                    next:(page < totalPage) ?`${baseUrl}/refund/reason/v1?page=${page +1}&limit=${limit}`:null
 
                 }
         
@@ -71,14 +72,15 @@ const postRefundReason = async(req,res,next)=>{
         })
 
         await newReason.save()
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(201).json({
             message: 'New Refund reason created',
             reason:newReason,
             links:{
-              self: `/refund/reason/v1/${newReason.id}`,
-              allRefundReason: `/refund/reason/v1`,
-              update: `/refund/reason/v1/${newReason.id}`,
-              delete: `/refund/reason/v1/${newReason.id}`,
+              self: `${baseUrl}/refund/reason/v1/${newReason.id}`,
+              allRefundReason: `${baseUrl}/refund/reason/v1`,
+              update: `${baseUrl}/refund/reason/v1/${newReason.id}`,
+              delete: `${baseUrl}/refund/reason/v1/${newReason.id}`,
             }
         })
     } catch (error) {
@@ -99,13 +101,14 @@ const putRefundReason = async(req,res,next)=>{
             },
             {new:true}
         )
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(203).json({
             message:'update reason successfully',
             updateReason: updateReason,
             links:{
-                self: `refund/reason/v1/${updateReason.id}`,
-                allRefundReason: `/refund/reason/v1`,
-                createRefundReason: `/refund/reason/v1`
+                self: `${baseUrl}/refund/reason/v1/${updateReason.id}`,
+                allRefundReason: `${baseUrl}/refund/reason/v1`,
+                createRefundReason: `${baseUrl}/refund/reason/v1`
             }
         })
     } catch (error) {
@@ -116,7 +119,7 @@ const deleteRefundReason = async(req,res,next)=>{
     try {
         const id = req.params.id;
         const deleteRefundReason = await Reason.findByIdAndDelete(id)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!deleteRefundReason){
             res.status(404).json({message:'Reason not found'})
         }else{
@@ -124,8 +127,8 @@ const deleteRefundReason = async(req,res,next)=>{
                 message:'Refund Reason Deleted successfully',
                deleteRefundReason : deleteRefundReason,
                links:{
-                  allRefundReason: `/refund/reason/v1`,
-                  createRefundReason: `/refund/reason/v1`
+                  allRefundReason: `${baseUrl}/refund/reason/v1`,
+                  createRefundReason: `${baseUrl}/refund/reason/v1`
                }
             })
         }

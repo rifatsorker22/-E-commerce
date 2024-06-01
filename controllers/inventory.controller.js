@@ -30,12 +30,14 @@ const getById = async(req,res,next)=>{
 }
 const getAll = async(req,res,next)=>{
     try {
-        const page = +req.params.page ||1 
-        const limit = +req.params.limit || 10
+        const page = +req.query.page ||1 
+        const limit = +req.query.limit || 10
         const skip = (page -1)*limit
         const allInventory = await Inventory.find().skip(skip).limit(limit)
         const totalItems = await Inventory.count()
         const totalPage = Math.ceil(totalItems/limit)
+
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
         res.status(200).json({
             message:'All Inventorys',
@@ -49,9 +51,9 @@ const getAll = async(req,res,next)=>{
 
             },
             links:{
-                self:`/inventory/v1?page=${page}&limit=${limit}`,
-                prev:(page > 1 ) ? `/inventory/v1?page=${page-1}&limit=${limit}`:null,
-                next:(page < totalPage ) ?`/inventory/v1?page=${page+1}&limit=${limit}`:null
+                self:`${baseUrl}?page=${page}&limit=${limit}`,
+                prev:(page > 1 ) ? `${baseUrl}?page=${page-1}&limit=${limit}`:null,
+                next:(page < totalPage ) ?`${baseUrl}?page=${page+1}&limit=${limit}`:null
 
             }
         })
@@ -63,7 +65,7 @@ const getAll = async(req,res,next)=>{
 const create = async(req,res,next)=>{
     try {
         const {name,quantity,price}=req.body;
-
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
         if(!name || ! quantity||!price){
             res.status(404).json({
                 message:'Invalid Credientials'
@@ -79,10 +81,10 @@ const create = async(req,res,next)=>{
                 message:'New Inventory created',
                 newInventory: newInventory,
                 links:{
-                    self: `/inventory/v1/${newInventory.id}`,
-                    allInventory: `/inventory/v1`,
-                    update:`/inventory/v1/${newInventory.id}` ,
-                    delete: `/inventory/v1/${newInventory.id}`
+                    self: `${baseUrl}/${newInventory.id}`,
+                    allInventory: `${baseUrl}`,
+                    update:`/${baseUrl}/${newInventory.id}` ,
+                    delete: `/${baseUrl}/${newInventory.id}`
                 }
             })
         }
@@ -94,6 +96,7 @@ const updateById = async(req,res,next)=>{
     try {
         const {id} = req.params;
         const {name,quantity,price}=req.body;
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
         if(!id){
             res.status(404).json({message:'Invalid credientals'})
         }else{
@@ -112,8 +115,8 @@ const updateById = async(req,res,next)=>{
                 message:'Inventory Updated successfully',
                 update: updateInvantory,
                 links:{
-                    self: `/inventory/v1/${updateInvantory.id}`,
-                    delete:`/inventory/v1/${updateInvantory.id}`
+                    self: `${baseUrl}/${updateInvantory.id}`,
+                    delete:`${baseUrl}/${updateInvantory.id}`
                 }
             })
         }
@@ -126,7 +129,7 @@ const deleteById = async(req,res,next)=>{
     try {
         const {id} = req.params;
         const deleteInventory = await Inventory.findByIdAndDelete(id)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
         if(!deleteInventory){
             res.status(402).json({message:'Inventory not found'})
         }else{
@@ -134,8 +137,8 @@ const deleteById = async(req,res,next)=>{
                 message: 'Innventory deleted successfully',
                 deleteInventory: deleteInventory,
                 links:{
-                    allInventory: `/inventory/v1`,
-                    createInventory: `/inventory/v1`,
+                    allInventory: `${baseUrl}`,
+                    createInventory: `${baseUrl}`,
                 }
             })
         }

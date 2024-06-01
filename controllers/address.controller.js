@@ -5,16 +5,37 @@ const Address = require('../model/address.model')
 
 const getAll = async(req,res,next)=>{
     try {
-        const address = await Address.find()
+        const page = +req.query.page ||1 
+        const limit = +req.query.limit || 10
+        const skip = (page -1)*limit
+        const allAddress = await Address.find().skip(skip).limit(limit)
+        const totalItems = await Address.count()
+        const totalPage = Math.ceil(totalItems/limit)
 
-        if(address==0){
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
+
+        if(allAddress==0){
             res.status(200).json({
                 message:'Addres is empty'
             })
         }else{
             res.status(200).json({
                 message:'All Address',
-                Address: address
+                Address: allAddress,
+                pagination:{
+                    currentPage: page,
+                    totalItems:totalItems,
+                    totalPage: totalPage,
+                    hasPrev: (page > 1 ) ? page -1 : null,
+                    hasNext: (page < totalPage ) ? page + 1: null
+
+                },
+                links:{
+                    self: `${baseUrl}?page=${page}&limit=${limit}`,
+                    prev: (page > 1 ) ?`${baseUrl}?page=${page-1}&limit=${limit}`:null,
+                    next: (page < totalPage ) ? `${baseUrl}?page=${page+1}&limit=${limit}`:null
+
+                }
             })
         }
     } catch (e) {
@@ -23,9 +44,10 @@ const getAll = async(req,res,next)=>{
 }
 const create = async(req,res,next)=>{
     try {
-        const {street,city,state,postalCode,country} =req.body
+        const {street,city,state,postalCode,country} =req.body;
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
-        if(!street || !city ||!state||!postalCode||!country){
+        if(!street || !city || !state || !postalCode || !country) {
             res.state(402).json({
                 message:'Invalid cridentials'
             })
@@ -40,7 +62,11 @@ const create = async(req,res,next)=>{
             await address.save()
             res.status(201).json({
                 message:'New Address created',
-                Address: address
+                Address: address,
+                links:{
+                  self: `${baseUrl}`,
+                  allAddress: `${baseUrl}`
+                }
             })
         }
     } catch (e) {
@@ -51,7 +77,7 @@ const updateById = async(req,res,next)=>{
     try {
         const {id} =req.params
         const {street,city,state,postalCode,country} = req.body
-
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
         if(!street || !city ||!state||!postalCode||!country){
             res.state(402).json({
                 message:'Invalid cridentials'
@@ -72,6 +98,10 @@ const updateById = async(req,res,next)=>{
             res.status(200).json({
                 message:'Address updated Successfully',
                 Update: updateAddress,
+                links:{
+                    self:`${baseUrl}/${updateAddress.id}`
+
+                }
 
             })
         }
@@ -85,7 +115,7 @@ const deleteByID = async(req,res,next)=>{
         const {id} =req.params
 
         const deleteAddress = await Address.findByIdAndDelete(id)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
         if(!deleteAddress){
             res.status(404).json({
                 message:'Address no0t found',
@@ -94,7 +124,11 @@ const deleteByID = async(req,res,next)=>{
         }else{
             res.status(200).json({
                 message:'Address Deleted Successfully',
-                delete: deleteAddress
+                delete: deleteAddress,
+                links:{
+                    create: `${baseUrl}`,
+                    allAddress: `${baseUrl}`
+                }
 
             })
         }

@@ -5,7 +5,7 @@ const getById = async(req,res,next)=>{
 try {
     const id = req.params.id;
     const payment = await paymentSource.findById(id)
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     if(!payment){
         res.status(404).json({message:'payment not found'})
     }else{
@@ -13,10 +13,10 @@ try {
             message:'Payment Found',
             payment:payment,
             links:{
-                self:`/payment/v1/${id}`,
-                asyncllPayment: `/payment/v1`,
-                updatePayment: `/payment/v1/${id}`,
-                deletePayment: `/payment/v1/${id}`
+                self:`${baseUrl}/payment/v1/${id}`,
+                asyncllPayment: `${baseUrl}/payment/v1`,
+                updatePayment: `${baseUrl}/payment/v1/${id}`,
+                deletePayment: `${baseUrl}/payment/v1/${id}`
             }
         })
     }
@@ -37,7 +37,7 @@ const getPayment = async(req,res,next)=>{
        const totalPayments = await paymentSource.count()
 
        const totalPage = Math.ceil(totalPayments/limit)
-
+       const baseUrl = `${req.protocol}://${req.get('host')}`
        if(payments === 0){
         res.status(404).json({message:"Payment not found"})
        }else{
@@ -52,9 +52,9 @@ const getPayment = async(req,res,next)=>{
                 hasPrevPage: page > 1
             },
             links:{
-              self: `/payment/v1?page=${page}&limit=${limit}`,
-              next: (page < totalPage)?`/payment/v1?page=${page+1}&limit=${limit}`:null,
-              prev: (page > 1)?`/payment/v1?page=${page-1}&limit=${limit}`: null
+              self: `${baseUrl}/payment/v1?page=${page}&limit=${limit}`,
+              next: (page < totalPage)?`${baseUrl}/payment/v1?page=${page+1}&limit=${limit}`:null,
+              prev: (page > 1)?`${baseUrl}/payment/v1?page=${page-1}&limit=${limit}`: null
             }
         })
        }
@@ -72,14 +72,15 @@ const postPayment = async(req,res,next)=>{
         last_four_digits
     })
     await newPayment.save()
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     res.status(201).json({
         message: 'New Payment is created',
         payment:newPayment,
         links:{
-            self: `/payment/v1/${newPayment._id}`,
-            allPayments: `/payment/v1`,
-            updatePayment: `/payment/v1/${newPayment._id}`,
-            deletePayment: `/payment/v1/${newPayment._id}`
+            self: `${baseUrl}/payment/v1/${newPayment._id}`,
+            allPayments: `${baseUrl}/payment/v1`,
+            updatePayment: `${baseUrl}/payment/v1/${newPayment._id}`,
+            deletePayment: `${baseUrl}/payment/v1/${newPayment._id}`
         }
     })
 
@@ -91,7 +92,7 @@ const putPayment = async(req,res,next)=>{
     try {
     const id = req.params.id;
     const updatePayment = await paymentSource.findByIdAndUpdate(id,req.body,{new:true})
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     if(!updatePayment){
         res.status(404).json({message:"Payment not updated"})
     }else{
@@ -99,9 +100,9 @@ const putPayment = async(req,res,next)=>{
             message:"Payment is updated",
             updatePayment:updatePayment,
             links:{
-              self: `/payment/v1/${updatePayment._id}`,
-              allPayments: `/payment/v1`,
-              createPayment: `/payment/v1`,
+              self: `${baseUrl}/payment/v1/${updatePayment._id}`,
+              allPayments: `${baseUrl}/payment/v1`,
+              createPayment: `${baseUrl}/payment/v1`,
             }
         })
     }
@@ -114,7 +115,7 @@ const deletePayment = async(req,res,next)=>{
     try {
     const id = req.params.id;
     const deletePayment = await paymentSource.findByIdAndDelete(id)
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     if(!deletePayment){
         res.status(404).json({message:'Payment not found'})
     }else{
@@ -122,8 +123,8 @@ const deletePayment = async(req,res,next)=>{
             message:'Payment deleted successfully',
             Delete : deletePayment,
             links:{
-                allPayments: `/payment/v1`,
-                createPayment: `/payment/v1`,
+                allPayments: `${baseUrl}/payment/v1`,
+                createPayment: `${baseUrl}/payment/v1`,
             }
         })
     }

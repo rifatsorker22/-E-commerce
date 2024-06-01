@@ -6,13 +6,13 @@ const getCart = async(req,res,next)=>{
 try {
     const userId = req.params.userId;
     const cart = await Cart.findOne({userId})
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     const responses = {
         message: "Cart Items",
         items: cart,
         links: {
-           self:`/cart/v1/${userId}`,
-           deleteCart:`/cart/v1/${userId}`,
+           self:`${baseUrl}/cart/v1/${userId}`,
+           deleteCart:`${baseUrl}/cart/v1/${userId}`,
         }
     }
 
@@ -64,12 +64,13 @@ try {
     cart.totalPrice += totalPrice
 
     await cart.save()
+    const baseUrl = `${req.protocol}://${req.get('host')}`
     res.status(201).json({
         message:'Product added in cart succcessfully',
         cart:cart,
         links:{
-            self:`/cart/v1/${userId}`,
-            deleteCart: `/cart/v1/${userId}`
+            self:`${baseUrl}/cart/v1/${userId}`,
+            deleteCart: `${baseUrl}/cart/v1/${userId}`
         }
     })
 
@@ -82,14 +83,14 @@ const deleteCart = async(req,res,next)=>{
     try {
       const userId = req.params.userId
       const cart = await Cart.findOneAndDelete({userId})
-
+      const baseUrl = `${req.protocol}://${req.get('host')}`
       if(!cart){
         res.status(404).json({message:'Cart not found'})
       }else{
         res.status(200).json({
             message:'Cart deleted sucessfully',
             links:{
-                createCart:`/cart/v1`
+                createCart:`${baseUrl}/cart/v1`
             }
         })
       }
@@ -103,7 +104,7 @@ const deleteCartItem = async(req,res,next)=>{
        const {cartId,itemId} = req.params;
 
        const cart = await Cart.findById(cartId)
-
+       
        if(!cart){
         res.status(404).json({message:'Cart not found'})
        }else{
@@ -124,10 +125,11 @@ const deleteCartItem = async(req,res,next)=>{
                }
         
                 await cart.save()
+                const baseUrl = `${req.protocol}://${req.get('host')}`
                 res.status(200).json({ 
                     message: 'Item removed from cart successfully' ,
                     links:{
-                        getcart: `/cart/v1/${cartId}`
+                        getcart: `${baseUrl}/cart/v1/${cartId}`
                     }
                 
                 });

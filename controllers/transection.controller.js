@@ -5,7 +5,7 @@ const getById = async(req,res,next)=>{
     try {
         const id = req.params.id;
         const transction = await Transection.findById(id)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!transction){
             res.status(200).json({
                 message:'Transection Not found'
@@ -15,9 +15,9 @@ const getById = async(req,res,next)=>{
                 message:'Transection Found',
                 Transection: transction,
                 links:{
-                    self: `/transection/v1/${transction.id}`,
-                    allTransection: `/transection/v1`,
-                    createTransection: `/transection/v1/`
+                    self: `${baseUrl}/transection/v1/${transction.id}`,
+                    allTransection: `${baseUrl}/transection/v1`,
+                    createTransection: `${baseUrl}/transection/v1/`
                 }
               })  
         }
@@ -36,7 +36,7 @@ const getTransection = async(req,res,next)=>{
     const totalTransection = await Transection.count()
     const totalPage = Math.ceil(totalTransection / limit)
 
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`
 
     if(transection === 0){
         res.status(404).json({message:'transection not found'})
@@ -54,9 +54,9 @@ const getTransection = async(req,res,next)=>{
 
             },
             links:{
-                self: `/transection/v1?page=${page}&limit=${limit}`,
-                prev: (page > 1 ) ? `/transection/v1?page=${page -1}&limit=${limit}` : null,
-                next: (page < totalPage) ? `/transection/v1?page=${page +1}&limit=${limit}` : null
+                self: `${baseUrl}/transection/v1?page=${page}&limit=${limit}`,
+                prev: (page > 1 ) ? `${baseUrl}/transection/v1?page=${page -1}&limit=${limit}` : null,
+                next: (page < totalPage) ? `${baseUrl}/transection/v1?page=${page +1}&limit=${limit}` : null
 
             }
         })
@@ -77,13 +77,14 @@ const postTransection = async(req,res,next)=>{
         description
        })
         await newTransection.save()
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(201).json({
             message:'New Transection Created',
             Transection:newTransection,
             links:{
-              self: `/transection/v1/${newTransection.id}`,
-              allTransection: `/transection/v1`,
-              updateTransection : `/transection/v1/${newTransection.id}`
+              self: `${baseUrl}/transection/v1/${newTransection.id}`,
+              allTransection: `${baseUrl}/transection/v1`,
+              updateTransection : `${baseUrl}/transection/v1/${newTransection.id}`
             }
     })
     } catch (error) {
@@ -100,11 +101,12 @@ const putTransection = async(req,res,next)=>{
         {status:newStatus},
         {new:true}
        )
+       const baseUrl = `${req.protocol}://${req.get('host')}`
        res.status(203).json({
         message:'Product is successfully updated ',
         transection:updateTransection,
         links:{
-            self: `/transection/v1/${updateTransection.id}`
+            self: `${baseUrl}/transection/v1/${updateTransection.id}`
         }
     })
     } catch (error) {
@@ -115,7 +117,7 @@ const deleteTransection = async(req,res,next)=>{
     try {
        const id = req.params.id;
        const deleteTransection = await Transection.findByIdAndDelete(id)
-
+       const baseUrl = `${req.protocol}://${req.get('host')}`
        if(!deleteTransection){
         res.status(404).json({
             message:'Transection not found'
@@ -125,8 +127,8 @@ const deleteTransection = async(req,res,next)=>{
             message:'Transection deleted successfully',
             Transection: deleteTransection,
             links:{
-                allTransection: `/transection/v1`,
-                createTransection: `/transection/v1/`
+                allTransection: `${baseUrl}/transection/v1`,
+                createTransection: `${baseUrl}/transection/v1/`
             }
         })
        }

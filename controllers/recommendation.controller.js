@@ -7,7 +7,7 @@ const getById = async(req,res,next)=>{
         const recommendation = await Recommendation.findById(id)
         .populate('user')
         .populate('product')  
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!recommendation){
             res.status(404).json({
                 message:'Recommendation not found'
@@ -17,11 +17,11 @@ const getById = async(req,res,next)=>{
                 message:'recommendation found',
                 Recommendation: recommendation,
                 links:{
-                    self: `/recommendation/v1/${recommendation.id}`,
-                    allRecomendation: `/recommendation/v1`,
-                    createRecomendation: `/recommendation/v1`,
-                    update: `/recommendation/v1/${recommendation.id}`,
-                    delete: `/recommendation/v1/${recommendation.id}`
+                    self: `${baseUrl}/recommendation/v1/${recommendation.id}`,
+                    allRecomendation: `${baseUrl}/recommendation/v1`,
+                    createRecomendation: `${baseUrl}/recommendation/v1`,
+                    update: `${baseUrl}/recommendation/v1/${recommendation.id}`,
+                    delete: `${baseUrl}/recommendation/v1/${recommendation.id}`
                 }
             })
         }
@@ -41,7 +41,7 @@ const getAll = async(req,res,next)=>{
         .limit(limit)
         const totalItem = await Recommendation.count()
         const totalPage = Math.ceil(totalItem/limit)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(200).json({
             message:'All Recommendations',
             Recommendation: recomendation,
@@ -53,9 +53,9 @@ const getAll = async(req,res,next)=>{
                 hasNext: (page < totalPage) ? page + 1: null
             },
             links:{
-                self: `/recommendation/v1?page=${page}&limit=${limit}`,
-                prev: (page > 1) ? `/recommendation/v1?page=${page-1}&limit=${limit}`: null,
-                next: (page < totalPage) ? `/recommendation/v1?page=${page+1}&limit=${limit}`: null
+                self: `${baseUrl}/recommendation/v1?page=${page}&limit=${limit}`,
+                prev: (page > 1) ? `${baseUrl}/recommendation/v1?page=${page-1}&limit=${limit}`: null,
+                next: (page < totalPage) ? `${baseUrl}/recommendation/v1?page=${page+1}&limit=${limit}`: null
 
             }
         })
@@ -77,14 +77,15 @@ const create = async(req,res,next)=>{
                 productId
             })
             await newRecommendation.save()
+            const baseUrl = `${req.protocol}://${req.get('host')}`
             res.status(201).json({
                 message:'New recommendatiion created',
                 Recommendation: newRecommendation,
                 links:{
-                    self: `/recommendation/v1/${newRecommendation.id}`,
-                    allRecomendation: `/recommendation/v1`,
-                    update: `/recommendation/v1/${newRecommendation.id}`,
-                    delete: `/recommendation/v1/${newRecommendation.id}`
+                    self: `${baseUrl}/recommendation/v1/${newRecommendation.id}`,
+                    allRecomendation: `${baseUrl}/recommendation/v1`,
+                    update: `${baseUrl}/recommendation/v1/${newRecommendation.id}`,
+                    delete: `${baseUrl}/recommendation/v1/${newRecommendation.id}`
                 }
             })
         }
@@ -110,12 +111,13 @@ const updateById = async(req,res,next)=>{
                     }
                 },{new:true}
             )
+            const baseUrl = `${req.protocol}://${req.get('host')}`
             res.status(200).json({
                 message:'Recommendation updateed Successfully',
                 update: updateRecommendation,
                 links:{
-                    self: `/recommendation/v1/${updateRecommendation.id}`,
-                    delete:`/recommendation/v1/${updateRecommendation.id}`
+                    self: `${baseUrl}/recommendation/v1/${updateRecommendation.id}`,
+                    delete:`${baseUrl}/recommendation/v1/${updateRecommendation.id}`
                 }
             
             })
@@ -131,7 +133,7 @@ const deleteById = async(req,res,next)=>{
         const {id} = req.params
 
         const deleteRecommendation = await Recommendation.findByIdAndDelete(id)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!deleteRecommendation){
             res.status(404).json({
                 message:'Recommendation not found',
@@ -141,8 +143,8 @@ const deleteById = async(req,res,next)=>{
                 message:'Recommendation Deleted successfully',
                 delete:deleteRecommendation,
                 links:{
-                    allRecomendation: `/recommendation/v1`,
-                    createRecomendation: `/recommendation/v1`,
+                    allRecomendation: `${baseUrl}/recommendation/v1`,
+                    createRecomendation: `${baseUrl}/recommendation/v1`,
                 }
             })
         }

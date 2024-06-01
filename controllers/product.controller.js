@@ -6,13 +6,15 @@ try {
     const id = req.params.id;
     const product = await Product.findById(id)
 
+    const baseUrl = `${req.protocol}://${req.get('host')}`
+
     const responses = {
         data: product,
         links: {
-            self:`/products/v1/${product.id}`,
-            collections:`/products/v1`,
-            update:`/products/v1/${product.id}`,
-            delete:`/products/v1/${product.id}`
+            self:`${baseUrl}/products/v1/${product.id}`,
+            collections:`${baseUrl}/products/v1`,
+            update:`${baseUrl}/products/v1/${product.id}`,
+            delete:`${baseUrl}/products/v1/${product.id}`
         }
     }
 
@@ -20,9 +22,9 @@ try {
         res.status(404).json({
             message:'Product Not Found',
             links:{
-                self: `/products/v1/${product.id}`,
-                allProduct: `/products/v1`,
-                createProduct: `/products/v1`
+                self: `${baseUrl}/products/v1/${product.id}`,
+                allProduct: `${baseUrl}/products/v1`,
+                createProduct: `${baseUrl}/products/v1`
             }
         
         })
@@ -93,16 +95,16 @@ const postProduct = async (req, res, next) => {
         // Save product to database
         await product.save();
 
-        
+        const baseUrl = `${req.protocol}://${req.get('host')}`
 
         const responses ={
             message: 'Product is created',
             data: product,
             links:{
-                self:`/products/v1/`,
-                collections:`/products/v1`,
-                update:`/products/v1/${product.id}`,
-                delete:`/products/v1/${product.id}`
+                self:`${baseUrl}/products/v1/`,
+                collections:`${baseUrl}/products/v1`,
+                update:`${baseUrl}/products/v1/${product.id}`,
+                delete:`${baseUrl}/products/v1/${product.id}`
             }
         }
         
@@ -118,16 +120,15 @@ const putProduct = async(req,res,next)=>{
         const id = req.params.id;
         const product= await Product.findById(id)
         const {name,quantity,price,description,category}=req.body;
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!product){
            res.status(402).json({
             message:'Product not found',
             links:{
-                self: `/products/v1/${product.id}`,
-                allproduct: `/products/v1`,
-                createproduct: `/products/v1`
+                self: `${baseUrl}/products/v1/${product.id}`,
+                allproduct: `${baseUrl}/products/v1`,
+                createproduct: `${baseUrl}/products/v1`
             }
-        
         })
         }else{
             const update = await Product.findByIdAndUpdate(
@@ -146,17 +147,14 @@ const putProduct = async(req,res,next)=>{
                     message:'Update Successfully',
                     data: update,
                     links:{
-                        self: `/products/v1/${product.id}`,
-                        allProduct: `/products/v1`,
-                        deleteProduct: `/products/v1/${product.id}`,
-                        createProduct:`/products/v1`
+                        self: `${baseUrl}/products/v1/${product.id}`,
+                        allProduct: `${baseUrl}/products/v1`,
+                        deleteProduct: `${baseUrl}/products/v1/${product.id}`,
+                        createProduct:`${baseUrl}/products/v1`
 
                     }
                 
-                
                 })
-
-    
     }
     } catch (error) {
         next(error)
@@ -166,13 +164,14 @@ const deleteProduct = async (req,res,next)=>{
     try {
         const id = req.params.id;
         const product = await Product.findById(id);
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!id){
             res.status(404).json({
                 message: 'Product not found for delete',
                 links:{
-                    self:`products/v1/${product.id}`,
-                    allproduct:`/products/v1`,
-                    createProduct:`/products/v1`
+                    self:`${baseUrl}products/v1/${product.id}`,
+                    allproduct:`${baseUrl}/products/v1`,
+                    createProduct:`${baseUrl}/products/v1`
                 }
             
             })
@@ -181,8 +180,8 @@ const deleteProduct = async (req,res,next)=>{
             res.status(203).json({
                 message: 'Delete successfully',
                 linlks:{
-                    allproduct:`/products/v1`,
-                    createProduct:`/products/v1`
+                    allproduct:`${baseUrl}/products/v1`,
+                    createProduct:`${baseUrl}/products/v1`
                 }
             
             })

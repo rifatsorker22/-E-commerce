@@ -25,13 +25,13 @@ const register = async (req,res,next)=>{
                 })
                 await newUser.save()
 
-                const baseUrl = `http://127.0.0.1:4444`
+                const baseUrl = `${req.protocol}://${req.get('host')}`;
 
                 res.status(201).json({
                     message:'User registration successful',
                     data: newUser,
                     links:{
-                        self:`${baseUrl}/api/register/v1`,
+                        self:`${baseUrl}/api/register/v1/${newUser._id}`,
                        login:`${baseUrl}/api/login/v1`,
                        logout:`${baseUrl}/api/logout/v1`
 
@@ -59,8 +59,7 @@ const login = async (req,res,next)=>{
                 }else{
                     const token = jwt.sign({userId:user._id,userRole:user.role},"secret-key")
 
-                      const baseUrl = `http://127.0.0.1:4444`
-
+                      const baseUrl = `${req.protocol}://${req.get('host')}`
                     res.status(200).json(
                         {
                             message:'Login successfull',
@@ -72,8 +71,8 @@ const login = async (req,res,next)=>{
         
                             }
                         }
-                        )
-                }
+         )
+            }
             });
         }
     } catch (error) {
@@ -82,7 +81,7 @@ const login = async (req,res,next)=>{
 }
 const logout = async (req,res,next) => {
     try {
-        const baseUrl = `http://127.0.0.1:4444`
+        const baseUrl = `${req.protocol}://${req.get('host')}`
             res.status(200).json({ 
                 message: "Logout successful",
                 self:`${baseUrl}/api/logout/v1`

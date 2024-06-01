@@ -12,7 +12,7 @@ const getAllRefund = async(req,res,next)=>{
 
         const totalPage  = Math.ceil(totalItem/limit)
 
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
 
         if(refund === 0){
             res.status(200).json({message:'Refund is empty'})
@@ -28,9 +28,9 @@ const getAllRefund = async(req,res,next)=>{
                   hasNext: (page < totalPage) ? page + 1 : null
                 },
                 links:{
-                    self: `/refund/v1?page=${page}&limit=${limit}`,
-                    prev: (page > 1) ? `/refund/v1?page=${page-1}&limit=${limit}`:null,
-                    next : (page < totalPage) ? `/refund/v1?page=${page+1}&limit=${limit}`:null
+                    self: `${baseUrl}/refund/v1?page=${page}&limit=${limit}`,
+                    prev: (page > 1) ? `${baseUrl}/refund/v1?page=${page-1}&limit=${limit}`:null,
+                    next : (page < totalPage) ? `${baseUrl}/refund/v1?page=${page+1}&limit=${limit}`:null
 
                 }
             })
@@ -43,7 +43,7 @@ const getRefundByStatus = async(req,res,next)=>{
     try {
         const {status}=req.params;
         const refund = await Refund.findOne({status})
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!status){
             res.status(404).json({message:'status is missing'})
         }else{
@@ -51,9 +51,9 @@ const getRefundByStatus = async(req,res,next)=>{
                 message:'Refund Found',
                 refund:refund,
                 links:{
-                    self:`/refund/v1/${refund.status}`,
-                    allRefund: `/refund/v1`,
-                    createRefund: `/refund/v1`,
+                    self:`${baseUrl}/refund/v1/${refund.status}`,
+                    allRefund: `${baseUrl}/refund/v1`,
+                    createRefund: `${baseUrl}/refund/v1`,
                 }
             })
         }
@@ -72,12 +72,13 @@ const postRefund = async(req,res,next)=>{
             reason
         })
         await refund.save()
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(201).json({
             message: ' New refund is created',
             refund: refund,
             links:{
-               self: `/refund/v1/${refund.id}`,
-               allRefund: `/refund/v1`,
+               self: `${baseUrl}/refund/v1/${refund.id}`,
+               allRefund: `${baseUrl}/refund/v1`,
         
             }
         })
@@ -89,7 +90,7 @@ const updateRefund = async(req,res,next)=>{
     try {
        const id = req.params.id
        const {amount,status,reason}=req.body 
-
+       const baseUrl = `${req.protocol}://${req.get('host')}`
        const updateRefund = await Refund.findByIdAndUpdate(
         id,
         {
@@ -107,9 +108,9 @@ const updateRefund = async(req,res,next)=>{
             message:'updated refund successfully',
             updateRefund: updateRefund,
             links:{
-                self: `/refund/v1/${updateRefund.id}`,
-                allRefund: `/refund/v1`,
-                createRefund: `/refund/v1`,
+                self: `${baseUrl}/refund/v1/${updateRefund.id}`,
+                allRefund: `${baseUrl}/refund/v1`,
+                createRefund: `${baseUrl}/refund/v1`,
             }
          })
        }
@@ -121,7 +122,7 @@ const deleteRefund = async(req,res,next)=>{
     try {
         const {id} = req.params;
         const deleteRefund = await Refund.findByIdAndDelete(id)
-
+        const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!deleteRefund){
             res.status(404).json({
                 message: 'Refund Not found'
@@ -131,8 +132,8 @@ const deleteRefund = async(req,res,next)=>{
                     message: ' Refund Deleteed successfully',
                     deleteRefund: deleteRefund,
                     links:{
-                        allRefund: `/refund/v1`,
-                        createRefund: `/refund/v1`
+                        allRefund: `${baseUrl}/refund/v1`,
+                        createRefund: `${baseUrl}/refund/v1`
                     }
                 })
 
