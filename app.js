@@ -16,6 +16,7 @@ const inventoryRouter = require('./routes/inventory.router')
 const recommendationRouter = require('./routes/recommendation.route')
 const addressRouter = require('./routes/address.router')
 const packageRouter = require('./routes/package.router')
+const trackingRouter = require('./routes/tracking.router')
 const shippingLabelRouter = require('./routes/shippingLabel.router')
 
 const healthRouter = require('./routes/Health.route')
@@ -39,6 +40,7 @@ app.use(inventoryRouter)
 app.use(recommendationRouter)
 app.use(addressRouter)
 app.use(packageRouter)
+app.use(trackingRouter)
 app.use(shippingLabelRouter)
 
 

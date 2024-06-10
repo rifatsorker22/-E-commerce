@@ -1,7 +1,7 @@
 const {Schema,model} = require('mongoose');
 
 const trackingSchema = new Schema({
-    trackingNUmber:{
+    trackingNumber:{
         type: Number,
         required: true,
         unique: true
