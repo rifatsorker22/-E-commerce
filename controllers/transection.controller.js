@@ -30,8 +30,6 @@ const getTransection = async(req,res,next)=>{
     const page = +req.query.page || 1;
     const limit = +req.query.limit || 10
     const skip = (page - 1) * limit
-
-
     const transection = await Transection.find().skip(skip).limit(limit)
     const totalTransection = await Transection.count()
     const totalPage = Math.ceil(totalTransection / limit)

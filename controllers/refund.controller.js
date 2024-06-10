@@ -10,7 +10,7 @@ const getAllRefund = async(req,res,next)=>{
         const refund = await Refund.find().skip(skip).limit(limit)
         const totalItem = await Refund.count()
 
-        const totalPage  = Math.ceil(totalItem/limit)
+        const totalPage  = Math.ceil(totalItem / limit)
 
         const baseUrl = `${req.protocol}://${req.get('host')}`
 
@@ -89,7 +89,7 @@ const postRefund = async(req,res,next)=>{
 const updateRefund = async(req,res,next)=>{
     try {
        const id = req.params.id
-       const {amount,status,reason}=req.body 
+       const {amount,status,reason} = req.body 
        const baseUrl = `${req.protocol}://${req.get('host')}`
        const updateRefund = await Refund.findByIdAndUpdate(
         id,

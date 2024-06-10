@@ -4,7 +4,7 @@ const Reason = require('../model/refundReason.model')
 
 const getById = async(req,res,next)=>{
     try {
-        const {id}=req.body
+        const {id} = req.params
         const reason = await Reason.findById(id)
         const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!reason){
@@ -33,6 +33,7 @@ const getAllrefundReason = async(req,res,next)=>{
         const totalItem = await Reason.count()
         const totalPage = Math.ceil(totalItem/limit)
         const baseUrl = `${req.protocol}://${req.get('host')}`
+
         if(reason === 0){
             res.status(404).json({message:'Reason not found'})
         }else{
@@ -73,6 +74,7 @@ const postRefundReason = async(req,res,next)=>{
 
         await newReason.save()
         const baseUrl = `${req.protocol}://${req.get('host')}`
+        
         res.status(201).json({
             message: 'New Refund reason created',
             reason:newReason,

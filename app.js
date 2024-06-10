@@ -15,6 +15,9 @@ const feedbackRouter = require('./routes/feedback.route')
 const inventoryRouter = require('./routes/inventory.router')
 const recommendationRouter = require('./routes/recommendation.route')
 const addressRouter = require('./routes/address.router')
+const packageRouter = require('./routes/package.router')
+const shippingLabelRouter = require('./routes/shippingLabel.router')
+
 const healthRouter = require('./routes/Health.route')
 require('./db/connect')
 
@@ -35,7 +38,8 @@ app.use(feedbackRouter)
 app.use(inventoryRouter)
 app.use(recommendationRouter)
 app.use(addressRouter)
-
+app.use(packageRouter)
+app.use(shippingLabelRouter)
 
 
 

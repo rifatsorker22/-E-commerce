@@ -32,10 +32,12 @@ const getOrder = async(req,res,next)=>{
     const page = +req.query.page || 1;
     const limit = +req.query.limit || 5;
     const skip = (page - 1) * limit;
-
      const orders = await Order.find().skip(skip).limit(limit)
      const totalOrders = orders.countDocuments()
      const baseUrl = `${req.protocol}://${req.get('host')}`
+
+
+     
      if(orders === 0){
         res.status(200).json({message:'Order not found'})
      }else{

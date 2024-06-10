@@ -30,14 +30,13 @@ const getPayment = async(req,res,next)=>{
         const page = +req.query.page || 1
         const limit = +req.query.limit || 10
         const skip = (page - 1) * limit
-
-        
-
        const payments = await paymentSource.find().skip(skip).limit(limit)
        const totalPayments = await paymentSource.count()
-
        const totalPage = Math.ceil(totalPayments/limit)
        const baseUrl = `${req.protocol}://${req.get('host')}`
+
+
+
        if(payments === 0){
         res.status(404).json({message:"Payment not found"})
        }else{
@@ -53,8 +52,8 @@ const getPayment = async(req,res,next)=>{
             },
             links:{
               self: `${baseUrl}/payment/v1?page=${page}&limit=${limit}`,
-              next: (page < totalPage)?`${baseUrl}/payment/v1?page=${page+1}&limit=${limit}`:null,
-              prev: (page > 1)?`${baseUrl}/payment/v1?page=${page-1}&limit=${limit}`: null
+              next: (page < totalPage) ? `${baseUrl}/payment/v1?page=${page+1}&limit=${limit}`:null,
+              prev: (page > 1) ? `${baseUrl}/payment/v1?page=${page-1}&limit=${limit}`: null
             }
         })
        }
