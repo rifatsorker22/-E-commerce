@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Transection = require('../model/transection.model')
 
 const refundSchema = new mongoose.Schema({
     transection_id:{

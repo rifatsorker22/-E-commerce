@@ -18,7 +18,7 @@ const addressRouter = require('./routes/address.router')
 const packageRouter = require('./routes/package.router')
 const trackingRouter = require('./routes/tracking.router')
 const shippingLabelRouter = require('./routes/shippingLabel.router')
-
+const shippingRouter = require('./routes/shipping.router')
 const healthRouter = require('./routes/Health.route')
 require('./db/connect')
 
@@ -42,7 +42,7 @@ app.use(addressRouter)
 app.use(packageRouter)
 app.use(trackingRouter)
 app.use(shippingLabelRouter)
-
+app.use(shippingRouter)
 
 
 
