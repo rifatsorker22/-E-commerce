@@ -1,54 +1,57 @@
-const User = require('../model/auth.model')
+const Auth = require('../model/auth.model')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken')
 
-
-
-const register = async (req,res,next)=>{
+const register = async(req,res,next)=>{
     try {
-        const {email,password,role } = req.body;
-        const user = await User.findOne({email})
+        const {email,password,role} = req.body
+        const user = await Auth.findOne({email})
 
         if(user){
-            res.status(404).json({message : 'User is already exist'})
+            res.status(404).json({
+                message: 'User already exist'
+            })
         }else{
-            bcrypt.hash(password, saltRounds,async function(err, hash) {
-               if(err){
-                res.status(404).json({message: 'Somthing went wrong'})
-               }else{
-                const newUser = new User({
-                    email,
-                    password:hash,
-                    role: role || 'user'
-
-                })
-                await newUser.save()
-
-                const baseUrl = `${req.protocol}://${req.get('host')}`;
-
-                res.status(201).json({
-                    message:'User registration successful',
-                    data: newUser,
-                    links:{
-                        self:`${baseUrl}/api/register/v1/${newUser._id}`,
-                       login:`${baseUrl}/api/login/v1`,
-                       logout:`${baseUrl}/api/logout/v1`
-
+            if(!email || !password ||!role){
+                res.status(404).json({message:'Invaild Credientials'})
+            }else{
+                bcrypt.hash(password, saltRounds,async function(err, hash){
+                    if(err){
+                        res.status(404).json({message: 'Invalid credentials'})
+                    }else{
+                        const newUser = new Auth({
+                            email,
+                            password:hash,
+                            role:role ||'user'
+                        })
+                        await newUser.save()
+                        const baseUrl = `${req.protocol}://${req.get('host')}`
+                        res.status(201).json({
+                            message: 'Registration successfull',
+                            User: newUser,
+                            links:{
+                                self: `${baseUrl}api/register/v1/${newUser.id}`,
+                                login: `${baseUrl}api/login/v1`,
+                                logout: `${baseUrl}api/logout/v1`
+                            }
+                        })
                     }
+
                 })
-               }
-            });
+            }
         }
-    
+
+        
     } catch (error) {
         next(error)
     }
 }
+  
 const login = async (req,res,next)=>{
     try {
         const {email,password}= req.body;
-        const user = await User.findOne({email})
+        const user = await Auth.findOne({email})
 
         if(!user){
             res.status(404).json({message: 'User not found'})
