@@ -37,37 +37,31 @@ try {
 }
 const getProduct = async (req,res,next)=>{
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-        const totalItem = await Product.countDocuments();
-        const totalPage = Math.ceil(totalItem / limit);
-        const item = await Product.find().skip(skip).limit(limit);
-      
-        const createLink = (page) => `/items?page=${page}&limit=${limit}`;
-      
-        const links = {
-          self: createLink(page),
-          first: createLink(1),
-          last: createLink(totalPage)
-        };
-      
-        if (page > 1) {
-          links.previous = createLink(page - 1);
-        }
-      
-        if (page < totalPage) {
-          links.next = createLink(page + 1);
-        }
-      
+        const page = +req.query.page ||1 
+        const limit = +req.query.limit || 10
+        const skip = (page -1) * limit
+        const allproduct = await Product.find().skip(skip).limit(limit)
+        const totalItems = await Product.countDocuments()
+        const totalPage = Math.ceil(totalItems/limit)
+
+        const baseUrl = `${req.protocol}://${req.get('host')}`
+
         res.status(200).json({
-          item,
-          page,
-          limit,
-          totalItem,
-          totalPage,
-          links
-        });
+            message:'All package',
+            allPackage: allproduct,
+            pagination:{
+                currentPage: page,
+                totalItems: totalItems,
+                totalPage: totalPage,
+                hasPrev: (page > 1) ? page - 1: null,
+                hasNext: (page < totalPage) ? page +1: null
+            },
+            links:{
+               self: `${baseUrl}/products/v1?page=${page}&limit=${limit}`,
+               hasPrev: (page > 1) ? `${baseUrl}/products/v1?page=${page-1}&limit=${limit}`: null,
+               hasNext: (page < totalPage) ? `${baseUrl}/products/v1?page=${page+1}&limit=${limit}`: null
+            }
+        })
       
       } catch (error) {
         next(error);

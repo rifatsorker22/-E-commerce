@@ -33,7 +33,7 @@ const getAll = async(req,res,next)=>{
         const limit = +req.query.limit || 10
         const skip = (page -1) * limit
         const allPackage = await Package.find().skip(skip).limit(limit)
-        const totalItems = await Package.count()
+        const totalItems = await Package.countDocuments()
         const totalPage = Math.ceil(totalItems/limit)
 
         const baseUrl = `${req.protocol}://${req.get('host')}`
@@ -56,28 +56,41 @@ const getAll = async(req,res,next)=>{
         })
 
     } catch (error) {
+        
         next(error)
     }
 }
 const create = async(req,res,next)=>{
     try {
-        const {weight,dimensions} = req.body
-
+        const { weight, dimensions } = req.body;
+        
+        // Validate input
+        if (!weight || !dimensions) {
+            return res.status(400).json({ error: 'Weight and dimensions are required' });
+        }
+        
+        // Create new package instance
         const newPackage = new Package({
-            weight,
-            dimensions
-        })
-        await newPackage.save()
-        const baseUrl = `${req.protocol}://${req.get('host')}`
-        res.status(201).json({
-            message:'Package is created',
-            package: newPackage,
-            links:{
-                self:`${baseUrl}/package/v1/${newPackage.id}`,
-                allPackage: `${baseUrl}/package/v1`
+            package: {
+                weight,
+                dimensions
             }
-        })
+        });
+            await newPackage.save()
+            const baseUrl = `${req.protocol}://${req.get('host')}`
+            res.status(201).json({
+                message:'Package is created',
+                package: newPackage,
+                links:{
+                    self:`${baseUrl}/package/v1/${newPackage.id}`,
+                    allPackage: `${baseUrl}/package/v1`
+                }
+            })
+        
+
+        
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }
@@ -89,8 +102,10 @@ const updateById = async(req,res,next)=>{
             id,
             {
                 $set:{
-                    weight:weight,
-                    dimensions: dimensions
+                    package: {
+                        weight:weight,
+                        dimensions:dimensions
+                    }
                 }
             },{new:true}
         )

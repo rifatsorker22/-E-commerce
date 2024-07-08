@@ -32,7 +32,7 @@ const getAll = async (req, res, next) => {
     const limit = +req.query.limit || 10
     const skip = ( page - 1)*limit
     const user = await User.find().skip(skip).limit(limit)
-    const totalItem = await User.count()
+    const totalItem = await User.countDocuments()
     const totalPage = Math.ceil(totalItem/limit)
 
 
@@ -64,24 +64,41 @@ const getAll = async (req, res, next) => {
       });
     }
   } catch (error) {
-    next(error);
+    console.log(error);
   }
 };
 const create = async (req, res, next) => {
   try {
-    const { firstName, lastName, email } = req.body;
+    const { name, email, password, role } = req.body;
 
-    if (!firstName && !lastName && !email) {
-      res.status(402).json({ message: "Invalid credientials" });
-    } else {
-      const newUser = new User({
-        firstName,
-        lastName,
+    // Validate input data
+    if (!name || !email || !password || !role) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = new User({
+        name,
         email,
-      });
+        password: hashedPassword,
+        role
+    });
 
-      await newUser.save();
-      const baseUrl = `${req.protocol}://${req.get('host')}`
+    // Save to database
+    await newUser.save();
+
+    // Optionally send notification email to new user
+
+   
       res.status(201).json({
         message: "New user is created",
         NewUser: newUser,
@@ -90,7 +107,7 @@ const create = async (req, res, next) => {
           allUsers: `${baseUrl}/users/v1`
         }
       });
-    }
+    
   } catch (error) {
     next(error);
   }

@@ -30,7 +30,7 @@ const getAllrefundReason = async(req,res,next)=>{
         const limit = +req.query.limit ||10
         const skip = (page - 1) * limit
         const reason = await Reason.find().skip(skip).limit(limit)
-        const totalItem = await Reason.count()
+        const totalItem = await Reason.countDocuments()
         const totalPage = Math.ceil(totalItem/limit)
         const baseUrl = `${req.protocol}://${req.get('host')}`
 

@@ -31,9 +31,9 @@ const register = async(req,res,next)=>{
                             message: 'Registration successfull',
                             User: newUser,
                             links:{
-                                self: `${baseUrl}api/register/v1/${newUser.id}`,
-                                login: `${baseUrl}api/login/v1`,
-                                logout: `${baseUrl}api/logout/v1`
+                                self: `${baseUrl}/api/register/v1/${newUser.id}`,
+                                login: `${baseUrl}/api/login/v1`,
+                                logout: `${baseUrl}/api/logout/v1`
                             }
                         })
                     }

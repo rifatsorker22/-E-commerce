@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {getCart,postCart,deleteCart,deleteCartItem}=require('../controllers/cart.controller')
+const {getCart,postCart,deleteCart,deleteCartItem} = require('../controllers/cart.controller')
 
 router.get('/cart/v1/:userId', getCart)
 router.post('/cart/v1', postCart)

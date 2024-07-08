@@ -34,10 +34,10 @@ const getAll = async(req,res,next)=>{
         const limit = +req.query.limit || 10
         const skip = (page -1)*limit
         const allInventory = await Inventory.find().skip(skip).limit(limit)
-        const totalItems = await Inventory.count()
+        const totalItems = await Inventory.countDocuments()
         const totalPage = Math.ceil(totalItems/limit)
 
-        const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
+        const baseUrl = `${req.protocol}://${req.get('host')}`
 
         res.status(200).json({
             message:'All Inventorys',
@@ -89,6 +89,7 @@ const create = async(req,res,next)=>{
             })
         }
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }

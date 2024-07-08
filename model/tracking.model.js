@@ -2,7 +2,7 @@ const {Schema,model} = require('mongoose');
 
 const trackingSchema = new Schema({
     trackingNumber:{
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },

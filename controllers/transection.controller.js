@@ -31,7 +31,7 @@ const getTransection = async(req,res,next)=>{
     const limit = +req.query.limit || 10
     const skip = (page - 1) * limit
     const transection = await Transection.find().skip(skip).limit(limit)
-    const totalTransection = await Transection.count()
+    const totalTransection = await Transection.countDocuments()
     const totalPage = Math.ceil(totalTransection / limit)
 
     const baseUrl = `${req.protocol}://${req.get('host')}`
@@ -92,11 +92,14 @@ const postTransection = async(req,res,next)=>{
 const putTransection = async(req,res,next)=>{
     try {
        const id = req.params.id;
-       const newStatus = req.body.newStatus
+       const {status} = req.body
 
        const updateTransection = await Transection.findByIdAndUpdate(
         id,
-        {status:newStatus},
+        {$set:{
+            status:status
+         }
+         },
         {new:true}
        )
        const baseUrl = `${req.protocol}://${req.get('host')}`

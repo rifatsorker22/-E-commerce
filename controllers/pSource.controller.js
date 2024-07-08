@@ -28,10 +28,10 @@ const getPayment = async(req,res,next)=>{
     try {
 
         const page = +req.query.page || 1
-        const limit = +req.query.limit || 10
+        const limit = +req.query.limit || 3
         const skip = (page - 1) * limit
        const payments = await paymentSource.find().skip(skip).limit(limit)
-       const totalPayments = await paymentSource.count()
+       const totalPayments = await paymentSource.countDocuments()
        const totalPage = Math.ceil(totalPayments/limit)
        const baseUrl = `${req.protocol}://${req.get('host')}`
 
@@ -90,7 +90,14 @@ const postPayment = async(req,res,next)=>{
 const putPayment = async(req,res,next)=>{
     try {
     const id = req.params.id;
-    const updatePayment = await paymentSource.findByIdAndUpdate(id,req.body,{new:true})
+    const {customar_id,type,last_four_digits}=req.body
+    const updatePayment = await paymentSource.findByIdAndUpdate(id,
+        {$set:{
+            customar_id:customar_id,
+            type:type,
+            last_four_digits:last_four_digits
+        }}
+        ,{new:true})
     const baseUrl = `${req.protocol}://${req.get('host')}`
     if(!updatePayment){
         res.status(404).json({message:"Payment not updated"})

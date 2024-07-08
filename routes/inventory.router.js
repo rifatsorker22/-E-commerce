@@ -6,7 +6,7 @@ getAll,
 create,
 updateById,
 deleteById
-}= require('../controllers/inventory.controller')
+} = require('../controllers/inventory.controller')
 
 router.get('/inventory/v1/:id', getById)
 router.get('/inventory/v1', getAll)

@@ -15,7 +15,7 @@ const packageSchema = new Schema({
                 type: Number,
                 required: true
             },
-            heigth:{
+            height:{
                 type: Number,
                 required: true
             }

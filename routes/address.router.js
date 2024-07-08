@@ -10,8 +10,6 @@ const {
 } = require('../controllers/address.controller')
 
 
-
-
 router.get('/address/v1', getAll)
 router.post('/address/v1', create)
 router.put('/address/v1/:id', updateById)

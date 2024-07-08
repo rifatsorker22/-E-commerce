@@ -4,9 +4,7 @@ const Recommendation = require('../model/recommendation.model')
 const getById = async(req,res,next)=>{
     try {
         const {id} = req.params
-        const recommendation = await Recommendation.findById(id)
-        .populate('user')
-        .populate('product')  
+        const recommendation = await Recommendation.findById(id).populate('userId').populate('productId')
         const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!recommendation){
             res.status(404).json({
@@ -34,12 +32,10 @@ const getAll = async(req,res,next)=>{
         const page = +req.query.page || 1;
         const limit = +req.query.limit ||10
         const skip = (page -1)* limit
-        const recomendation = await Recommendation.find()
-        .populate('user')
-        .populate('product')
+        const recomendation = await Recommendation.find().populate('userId').populate('productId')
         .skip(skip)
         .limit(limit)
-        const totalItem = await Recommendation.count()
+        const totalItem = await Recommendation.countDocuments()
         const totalPage = Math.ceil(totalItem/limit)
         const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(200).json({
@@ -60,22 +56,27 @@ const getAll = async(req,res,next)=>{
             }
         })
     } catch(e) {
+        console.log(e)
         next(e)
     }
 }
 const create = async(req,res,next)=>{
     try {
-        const {userId,productId} = req.body
+        const { userId, productId, rating, comments } = req.body;
 
         if(!userId || !productId){
             res.status(404).json({
                 messgae:'Invalid credintials'
             })
         }else{
+        
             const newRecommendation = new Recommendation({
-                userId,
-                productId
-            })
+                 userId, 
+                 productId, 
+                 rating, 
+                 comments 
+                });
+                
             await newRecommendation.save()
             const baseUrl = `${req.protocol}://${req.get('host')}`
             res.status(201).json({
@@ -90,14 +91,15 @@ const create = async(req,res,next)=>{
             })
         }
     } catch(e) {
+        console.log(e)
         next(e)
     }
 }
 const updateById = async(req,res,next)=>{
     try {
         const {id} = req.params
-        const {userId,productId} = req.body
-        if(!userId || !productId){
+        const {userId,productId,rating} = req.body
+        if(!userId || !productId || !rating){
             res.status(404).json({
                 messgae:'Invalid credintials'
             })
@@ -107,7 +109,8 @@ const updateById = async(req,res,next)=>{
                 {
                     $set:{
                         userId:userId,
-                        productId:productId
+                        productId:productId,
+                        rating:rating
                     }
                 },{new:true}
             )

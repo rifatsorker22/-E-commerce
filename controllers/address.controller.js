@@ -9,7 +9,7 @@ const getAll = async(req,res,next)=>{
         const limit = +req.query.limit || 10
         const skip = (page -1)*limit
         const allAddress = await Address.find().skip(skip).limit(limit)
-        const totalItems = await Address.count()
+        const totalItems = await Address.countDocuments()
         const totalPage = Math.ceil(totalItems/limit)
 
         const baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`

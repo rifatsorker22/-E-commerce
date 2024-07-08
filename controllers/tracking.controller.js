@@ -33,7 +33,7 @@ const getAll = async(req,res,next) =>{
         const tracking = await Tracking.find()
         .skip(skip)
         .limit(limit)
-        const totalItem = await Tracking.count()
+        const totalItem = await Tracking.countDocuments()
         const totalPage = Math.ceil(totalItem/limit)
         const baseUrl = `${req.protocol}://${req.get('host')}`
         res.status(200).json({
@@ -83,6 +83,7 @@ const create = async(req,res,next) =>{
             })
         }
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }
@@ -91,11 +92,7 @@ const updateById = async(req,res,next) =>{
         const {id} = req.params
         const {trackingNumber,carrier,status} = req.body
 
-        if(!trackingNumber||!carrier||!status){
-            res.status(404).json({
-                message:'Invaild Credientials',
-            })
-        }else{
+       
             const updateTracking = await Tracking.findByIdAndUpdate(
                 id,
                 {
@@ -115,8 +112,9 @@ const updateById = async(req,res,next) =>{
                    self: `${baseUrl}/tracking/v1/${updateTracking.id}`
                 }
             })
-        }
+        
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }

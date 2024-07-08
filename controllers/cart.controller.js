@@ -77,7 +77,7 @@ try {
 } catch (error) {
     console.log(error)
     next(error)
-}
+} 
 }
 const deleteCart = async(req,res,next)=>{
     try {

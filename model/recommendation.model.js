@@ -1,20 +1,32 @@
-const {Schema,model, default: mongoose} = require('mongoose')
+const mongoose = require('mongoose');
 
-const recommendationSchema = new Schema({
-    user:{
+const recommendationSchema = new mongoose.Schema({
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'User',
+        ref: 'User', // Refers to the 'User' model
         required: true
     },
-    product:{
+    productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Product',
+        ref: 'Product', // Refers to the 'Product' model
         required: true
+    },
+    rating: {
+        type: Number,
+        min: 1,
+        max: 5,
+        default: 3 // Default rating
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now
+    },
+    comments: {
+        type: String,
+        trim: true
     }
+});
 
-})
+const Recommendation = mongoose.model('Recommendation', recommendationSchema);
 
-const Recommendation = new model('recommendation',recommendationSchema)
-
-
-module.exports = Recommendation;    
+module.exports = Recommendation;

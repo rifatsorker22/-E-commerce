@@ -8,7 +8,7 @@ const getAllRefund = async(req,res,next)=>{
         const limit = +req.query.limit || 10;
         const skip = (page - 1)* limit
         const refund = await Refund.find().skip(skip).limit(limit)
-        const totalItem = await Refund.count()
+        const totalItem = await Refund.countDocuments()
 
         const totalPage  = Math.ceil(totalItem / limit)
 
@@ -41,7 +41,7 @@ const getAllRefund = async(req,res,next)=>{
 }
 const getRefundByStatus = async(req,res,next)=>{
     try {
-        const {status}=req.params;
+        const {status} =req.params;
         const refund = await Refund.findOne({status})
         const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!status){
@@ -83,6 +83,7 @@ const postRefund = async(req,res,next)=>{
             }
         })
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }
@@ -118,30 +119,30 @@ const updateRefund = async(req,res,next)=>{
         next(error)
     }
 }
-const deleteRefund = async(req,res,next)=>{
+const deleteRefund = async (req,res,next) => {
     try {
-        const {id} = req.params;
-        const deleteRefund = await Refund.findByIdAndDelete(id)
-        const baseUrl = `${req.protocol}://${req.get('host')}`
-        if(!deleteRefund){
-            res.status(404).json({
-                message: 'Refund Not found'
-              })
-             }else{
-                res.status(200).json({
-                    message: ' Refund Deleteed successfully',
-                    deleteRefund: deleteRefund,
-                    links:{
-                        allRefund: `${baseUrl}/refund/v1`,
-                        createRefund: `${baseUrl}/refund/v1`
-                    }
-                })
+        const id  = req.params.id;
+        const deletedRefund = await Refund.findByIdAndDelete(id);
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-             }
+        if (!deletedRefund) {
+            return res.status(404).json({
+                message: 'Refund Not found'
+            });
+        }
+
+        res.status(200).json({
+            message: 'Refund Deleted successfully',
+            deletedRefund: deletedRefund,
+            links: {
+                allRefund: `${baseUrl}/refund/v1`,
+                createRefund: `${baseUrl}/refund/v1`
+            }
+        });
     } catch (error) {
-        next(error)
+        next(error); // Pass any caught error to Express error handling middleware
     }
-}
+};
 
 module.exports ={
 

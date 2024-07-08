@@ -1,7 +1,11 @@
 const express = require('express')
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 const port = 4444;
 const hostName = '127.0.0.1'
 const app = express()
+const cors = require('cors')
 const authRouter = require('./routes/auth.router')
 const userRouter = require('./routes/user.router')
 const productRouter = require('./routes/product.router')
@@ -24,6 +28,47 @@ require('./db/connect')
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+
+app.use(cors()); // Enable CORS for all routes
+
+// Alternatively, you can configure CORS
+app.use(cors({
+  origin: 'http://localhost:8080', // Replace with your frontend's URL
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
+
+
+const swaggerOptions = {
+    swaggerDefinition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'API Documentation',
+        version: '1.0.0',
+        description: 'API Documentation with automated generation',
+      },
+      servers: [
+        {
+          url: 'http://localhost:4444',
+        },
+      ],
+    },
+    apis: [path.join(__dirname, 'routes/*.js')], // Path to your API files
+  };
+  
+  const swaggerDocs = swaggerJsdoc(swaggerOptions);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+  
+
+
+
+
+
+
+
+
+
 
 app.use(healthRouter)
 app.use(authRouter)

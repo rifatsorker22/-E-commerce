@@ -2,7 +2,6 @@ const Feedback = require('../model/feedback.model')
 
 
 
-
 const getByIdFeedback = async(req,res,next)=>{
     try {
         const {id} = req.params;
@@ -33,7 +32,7 @@ const getFeedback = async(req,res,next)=>{
         const limit = +req.params.limit || 5
         const skip = (page-1)*limit
         const feedback = await Feedback.find().skip(skip).limit(limit)
-        const totalItem = await Feedback.count()
+        const totalItem = await Feedback.countDocuments()
         const totalPage = Math.ceil(totalItem/limit)
         const baseUrl = `${req.protocol}://${req.get('host')}`
         const pagination = {
@@ -75,7 +74,7 @@ const postFeedback = async(req,res,next)=>{
         })
         await feedback.save()
         res.status(201).json({
-            message:'',
+            message:'Thanks For your feedback',
             feedback:feedback,
             links:{
                 self: `${baseUrl}/feedback/v1/${feedback.id}`,
@@ -92,10 +91,10 @@ const postFeedback = async(req,res,next)=>{
 }
 const putFeedback = async(req,res,next)=>{
     try {
-        const {id}=req.params
+        const {id} =req.params
         const {orderId,rating,comments}=req.body
         const baseUrl = `${req.protocol}://${req.get('host')}`
-        const UpdateFeedback = await Feedback.getByIdAndUpdate(
+        const UpdateFeedback = await Feedback.findByIdAndUpdate(
             
             id,
             {
@@ -118,13 +117,14 @@ const putFeedback = async(req,res,next)=>{
             })
         }
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }
 const deleteFeedback = async(req,res,next)=>{
     try {
         const {id} = req.params
-        const deleteFeedback = await Feedback.getByIdAndDelete(id)
+        const deleteFeedback = await Feedback.findByIdAndDelete(id)
         const baseUrl = `${req.protocol}://${req.get('host')}`
         if(!deleteFeedback){
             res.status(404).json({message:'feedback not found'})
